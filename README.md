@@ -45,3 +45,4 @@ Output goes to the `public/` directory.
 
 - **GitHub Pages**: Auto-deployed via GitHub Actions on push to `main`
 - **Server**: Built manually with Hugo, served via nginx Docker container
+# Last updated: Thu Aug 13 19:44:19 UTC 2026
