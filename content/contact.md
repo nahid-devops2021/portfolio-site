@@ -1,8 +1,8 @@
 ---
 title: "Contact"
 date: 2026-08-14
-aliases: ["contact-me", "get-in-touch"]
 author: "Nahid Hasan"
+slug: "contact"
 ---
 
 I'm always happy to connect — whether it's about DevOps, Linux administration, automation, or just a friendly hello. Don't hesitate to reach out!

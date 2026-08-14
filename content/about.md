@@ -2,8 +2,8 @@
 title = "About Me"
 description = "DevOps Engineer & System Administrator — automating infrastructure, deploying applications, solving real problems"
 date = "2026-08-14"
-aliases = ["about-us"]
 author = "Nahid Hasan"
+slug = "about"
 +++
 
 Hi! I'm **Md. Nahid Hasan**, a DevOps engineer and Linux system administrator based in Dhaka, Bangladesh. I'm passionate about automation, infrastructure reliability, and building tools that make development teams more productive.
