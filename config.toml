@@ -12,9 +12,9 @@ enableEmoji = true
 
 [params]
 author = "Md. Nahid Hasan"
-description = "DevOps Engineer & System Administrator — portfolio and blog"
-keywords = "devops,sysadmin,linux,docker,kubernetes,automation,blog,personal"
-info = ["DevOps Engineer", "System Administrator"]
+description = "DevOps Engineer | 7+ years | Kubernetes, AWS, CI/CD, Docker, FinTech"
+keywords = "devops,kubernetes,aws,docker,cka,linux,fintech,ci/cd,ansible,terraform"
+info = ["DevOps Engineer", "CKA Certified", "AWS Solutions Architect"]
 avatarURL = "images/avatar.jpg"
 dateFormat = "January 2, 2006"
 since = 2019
