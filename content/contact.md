@@ -11,11 +11,9 @@ I'm always happy to connect — whether it's about DevOps, Kubernetes, cloud inf
 
 | Channel | Details |
 |---|---|
-| 📧 **Email** | [nahidhasan26@gmail.com](mailto:nahidhasan26@gmail.com) |
 | 💼 **LinkedIn** | [linkedin.com/in/mdnahid](https://www.linkedin.com/in/mdnahid/) |
 | 🐙 **GitHub** | [github.com/nahid-devops2021](https://github.com/nahid-devops2021/) |
 | 🦊 **GitLab** | [gitlab.com/nhasan19](https://gitlab.com/nhasan19/) |
-| 📍 **Location** | 92/3, Shukrabad, Dhanmondi, Dhaka, Bangladesh |
 
 ## 🤝 What I Can Help With
 
