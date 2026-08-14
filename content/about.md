@@ -1,32 +1,47 @@
 +++
-title = "About me"
-description = "DevOps Engineer & System Administrator"
+title = "About Me"
+description = "DevOps Engineer & System Administrator — automating infrastructure, deploying applications, solving real problems"
 date = "2026-08-14"
-aliases = ["about-us", "about-hugo", "contact"]
+aliases = ["about-us"]
 author = "Nahid Hasan"
 +++
 
-Hi! I'm a **DevOps Engineer** with experience in Linux system administration, cloud infrastructure, automation, and CI/CD pipelines. I enjoy building reliable, scalable systems and automating everything that can be automated.
+Hi! I'm **Md. Nahid Hasan**, a DevOps engineer and Linux system administrator based in Dhaka, Bangladesh. I'm passionate about automation, infrastructure reliability, and building tools that make development teams more productive.
+
+---
 
 ### 💼 Experience
 
-- **System Administrator** at **Portonics Ltd.** — Managing infrastructure, Docker deployments, server hardening, and automation workflows
-- Previously **DevOps Engineer** at **UpTech Solution Ltd.** — CI/CD pipelines, cloud infrastructure, containerization
-- **System Engineer** at **G Technologies** — System administration, network management
-- **Junior Network Engineer** at **XiTechBD** — Network configuration and support
+| Role | Company | Focus |
+|------|---------|-------|
+| **System Administrator** | **Portonics Ltd.** | Infrastructure, Docker, automation, security hardening |
+| **DevOps Engineer** | **UpTech Solution Ltd.** | CI/CD pipelines, cloud infra, containerization |
+| **System Engineer** | **G Technologies** | System admin, network management |
+| **Jr. Network Engineer** | **XiTechBD** | Network config & support |
 
 ### 🎓 Education
 
-- **B.Sc. in Electronics and Telecommunication Engineering (ETE)** — Daffodil International University, Dhaka, Bangladesh
+**B.Sc. in Electronics & Telecommunication Engineering (ETE)**  
+Daffodil International University, Dhaka
 
-### 🛠️ Skills
+### 🛠️ What I Work With
 
-- **Infrastructure:** Linux (RHEL/AlmaLinux), Docker, Docker Compose, nginx
-- **CI/CD:** Git, GitHub Actions, GitLab CI
-- **Automation:** Bash, Python, FastAPI
-- **Monitoring:** Log management, health checks, system auditing
-- **Networking:** TCP/IP, DNS, VPN, firewalld, OpenVPN
+| Area | Tools & Tech |
+|------|-------------|
+| 🏗️ **Infrastructure** | Linux (RHEL/AlmaLinux/Ubuntu), Docker, Docker Compose, nginx |
+| 🔄 **CI/CD** | Git, GitHub Actions, GitLab CI |
+| 🐍 **Development** | Python, FastAPI, Bash |
+| 🔒 **Security** | Server hardening, VPN (OpenVPN), firewalld |
+| 🌐 **Networking** | TCP/IP, DNS, load balancing, Teleport |
+| 📊 **Monitoring** | Health checks, log analysis, system auditing |
+
+### 🚀 Current Projects
+
+- **Portfolio Tracker** — DSE stock portfolio dashboard with live market data
+- **Money Manager** — Personal finance management app (FastAPI + Next.js)
+- **Paperclip AI Integration** — Autonomous AI agent orchestration
+- **Portfolio Site** — This very site! Built with Hugo
 
 ### 📫 Let's Connect
 
-Feel free to reach out on [LinkedIn](https://www.linkedin.com/in/mdnahid/) or check out my projects on [GitHub](https://github.com/nahid-devops2021/).
+If you want to collaborate, need DevOps help, or just want to chat — check out the [Contact](/contact/) page. I'm always open to interesting conversations!
