@@ -13,7 +13,7 @@ You can't fix what you can't see. Every production system — whether a single V
 
 ## Why Prometheus, Grafana, and AlertManager?
 
-The stack has become the de facto standard for good reason:
+The stack has become the industry-standard choice for observability, and for good reason:
 
 - **Prometheus** — a high-performance time-series database that scrapes metrics from your servers and applications over HTTP. It's pull-based, which makes it simple to secure and operate, and its query language (PromQL) is powerful enough for complex analytics.
 - **Grafana** — the visualization layer. It turns raw time-series data into beautiful, shareable dashboards and is widely used across the industry.
