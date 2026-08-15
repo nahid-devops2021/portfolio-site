@@ -245,7 +245,3 @@ Once you have the basics running:
 2. Set up **Prometheus blackbox exporter** for external endpoint monitoring (HTTP, TCP, ICMP)
 3. Configure **AlertManager silences** for planned maintenance windows
 4. Use **Grafana annotations** to mark deployments on your dashboards (correlate performance changes with deployments)
-
----
-
-*This is the setup I use daily for FinTech and telecom infrastructure. The same stack monitors 100-node Kubernetes clusters — it scales well when you add proper service discovery via Kubernetes service monitors.*
