@@ -1,25 +1,29 @@
 +++
-title = "Setting Up Monitoring: Prometheus + Grafana + AlertManager"
+title = "How to Build a Production-Grade Monitoring Stack with Prometheus, Grafana & AlertManager"
 date = "2026-08-14"
-description = "A practical guide to setting up Prometheus for metrics collection, Grafana for visualization, and AlertManager for notifications — all with Docker Compose."
-tags = ["prometheus", "grafana", "alertmanager", "monitoring", "docker", "devops"]
+description = "A complete, battle-tested guide to standing up Prometheus for metrics collection, Grafana for visualization, and AlertManager for alerting — the open-source observability stack that powers modern infrastructure."
+tags = ["prometheus", "grafana", "alertmanager", "monitoring", "observability", "docker", "devops"]
 categories = ["DevOps"]
 author = "Nahid Hasan"
 +++
 
-## Why This Stack?
-
-Every production system needs monitoring. You can't fix what you can't see. The **Prometheus + Grafana + AlertManager** stack is the industry standard for open-source observability:
-
-- **Prometheus** — collects and stores metrics (time-series database)
-- **Grafana** — visualizes metrics on dashboards
-- **AlertManager** — sends alerts when things go wrong (email, Slack, Telegram, etc.)
-
-I've set this up multiple times for FinTech and telecom infrastructure. Here's the pattern I use.
+You can't fix what you can't see. Every production system — whether a single VPS or a 100-node Kubernetes cluster — needs observability before it needs features. This post walks through the industry-standard open-source stack: **Prometheus** for metrics, **Grafana** for dashboards, and **AlertManager** for notifications. By the end, you'll have a fully working monitoring stack running in Docker Compose, with alerts landing in your inbox or chat.
 
 <!--more-->
 
+## Why Prometheus, Grafana, and AlertManager?
+
+The stack has become the de facto standard for good reason:
+
+- **Prometheus** — a high-performance time-series database that scrapes metrics from your servers and applications over HTTP. It's pull-based, which makes it simple to secure and operate, and its query language (PromQL) is powerful enough for complex analytics.
+- **Grafana** — the visualization layer. It turns raw time-series data into beautiful, shareable dashboards and is widely used across the industry.
+- **AlertManager** — the notification brain. It receives alerts from Prometheus, deduplicates them, groups related ones, and routes them to Slack, Telegram, email, PagerDuty, and more.
+
+Each tool excels at one job, and together they cover the full observability loop: **collect → visualize → alert**.
+
 ## The Architecture
+
+Here's the data flow at a glance:
 
 {{< mermaid >}}
 graph TB
@@ -31,9 +35,11 @@ graph TB
     C --> D
 {{< /mermaid >}}
 
+Prometheus scrapes `/metrics` endpoints, stores the data internally, serves it to Grafana, and evaluates alert rules that get handed to AlertManager when thresholds are breached.
+
 ## 1. Docker Compose Setup
 
-I run this on my home server with Docker Compose. Here's the full stack:
+The fastest way to stand this up is Docker Compose. Create a `docker-compose.yml` with three services:
 
 ```yaml
 services:
@@ -78,9 +84,17 @@ volumes:
   grafana-data:
 ```
 
+Then start everything:
+
+```bash
+docker compose up -d
+```
+
+> **Security note:** change the Grafana default credentials (`admin/admin`) immediately after first login. In production, also consider putting Grafana behind a reverse proxy with TLS.
+
 ## 2. Prometheus Configuration
 
-Create `prometheus/prometheus.yml`:
+Create `prometheus/prometheus.yml` to define what to scrape:
 
 ```yaml
 global:
@@ -101,25 +115,28 @@ scrape_configs:
       - targets: ['192.168.0.43:9323']
 ```
 
-A quick tip I learned the hard way: always set `evaluation_interval` to match your `scrape_interval` — otherwise your alert rules evaluate on stale data and you get false positives.
+One tip I've learned the hard way: **always set `evaluation_interval` to match your `scrape_interval`.** If alert rules are evaluated on data scraped much earlier, you'll chase false positives that have already resolved.
 
-## 3. Grafana Dashboards
+## 3. Grafana: Connect and Visualize
 
-Once Grafana is running at `http://localhost:3000` (default login: `admin/admin`):
+Grafana runs at `http://localhost:3000`. After logging in with the credentials from the compose file:
 
-1. **Add Prometheus data source** → URL: `http://prometheus:9090`
-2. **Import a dashboard** — I use dashboard **1860** (Node Exporter Full) for server metrics
-3. **Create custom panels** for your specific needs
+1. **Add a data source** → Prometheus → URL: `http://prometheus:9090` (use the container name — it resolves on the compose network).
+2. **Import a dashboard** — dashboard **1860** (Node Exporter Full) is an excellent starting point for server metrics.
+3. **Build custom panels** for metrics that matter to you.
 
-My go-to dashboard panels:
-- **CPU Usage** — `100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)`
-- **Memory** — `node_memory_MemTotal_bytes - node_memory_MemFree_bytes - node_memory_Buffers_bytes - node_memory_Cached_bytes`
-- **Disk** — `100 - ((node_filesystem_avail_bytes{mountpoint="/"} * 100) / node_filesystem_size_bytes{mountpoint="/"})`
-- **Network** — `rate(node_network_receive_bytes_total[5m])`
+A few PromQL queries worth bookmarking:
 
-## 4. AlertManager Configuration
+| Metric | PromQL |
+|--------|--------|
+| **CPU usage %** | `100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)` |
+| **Memory used (bytes)** | `node_memory_MemTotal_bytes - node_memory_MemFree_bytes - node_memory_Buffers_bytes - node_memory_Cached_bytes` |
+| **Disk usage %** | `100 - ((node_filesystem_avail_bytes{mountpoint="/"} * 100) / node_filesystem_size_bytes{mountpoint="/"})` |
+| **Network RX rate** | `rate(node_network_receive_bytes_total[5m])` |
 
-Create `alertmanager/alertmanager.yml`:
+## 4. AlertManager: Routing Notifications
+
+AlertManager decides *where* alerts go. Create `alertmanager/alertmanager.yml`:
 
 ```yaml
 global:
@@ -140,7 +157,7 @@ receivers:
         send_resolved: true
 ```
 
-For **Slack** instead of Telegram, swap the receiver:
+Switching to Slack is a one-block change:
 
 ```yaml
 receivers:
@@ -151,9 +168,11 @@ receivers:
         send_resolved: true
 ```
 
-## 5. Alert Rules
+The `group_by`, `group_wait`, and `repeat_interval` knobs control notification batching — tune them to avoid alert fatigue while never missing a real incident.
 
-Create `prometheus/alerts.yml` and reference it in your prometheus config:
+## 5. Alert Rules: Define What Matters
+
+Alerts are defined as Prometheus rules. Create `prometheus/alerts.yml`:
 
 ```yaml
 groups:
@@ -184,16 +203,18 @@ groups:
           summary: "Instance {{ $labels.instance }} is down"
 ```
 
-Add it to your `prometheus.yml`:
+Then reference the rules file from `prometheus.yml`:
 
 ```yaml
 rule_files:
   - "alerts.yml"
 ```
 
-## 6. Node Exporter (collecting host metrics)
+The `for` clause is important — it means the condition must persist for that duration before firing, which filters out transient spikes.
 
-On each server you want to monitor, run:
+## 6. Node Exporter: Collecting Host Metrics
+
+To monitor a server's CPU, memory, disk, and network, run a Node Exporter on each host:
 
 ```bash
 docker run -d --name node_exporter \
@@ -209,24 +230,33 @@ docker run -d --name node_exporter \
     --path.rootfs=/rootfs
 ```
 
-## What I Monitor in Production
+Verify it's exporting metrics at `http://<host>:9100/metrics`, then add it as a scrape target in Prometheus.
 
-Here are the key metrics I track across production infrastructure:
+## What to Monitor in Production
+
+Don't monitor everything — monitor what breaks. These are the metrics I track across production infrastructure:
 
 | Category | Metrics | Why |
 |----------|---------|-----|
 | **CPU** | Usage %, load average, iowait | Capacity planning, runaway processes |
 | **Memory** | Total, used, cached, swap | OOM prevention |
-| **Disk** | Usage %, inode usage, I/O latency | Prevent full-disks from crashing apps |
-| **Network** | Bandwidth, errors, dropped packets | Detect network issues early |
+| **Disk** | Usage %, inode usage, I/O latency | Prevent full disks from crashing apps |
+| **Network** | Bandwidth, errors, dropped packets | Detect issues before users do |
 | **Docker** | Container count, restart count | Catch crashing containers |
 | **Kubernetes** | Pod status, node health, resource quotas | Cluster health |
 
 ## Next Steps
 
-Once you have the basics running:
+Once the basics are running, take it further:
 
-1. Add **Grafana Loki** for log aggregation (pair logs with metrics for full observability)
-2. Set up **Prometheus blackbox exporter** for external endpoint monitoring (HTTP, TCP, ICMP)
-3. Configure **AlertManager silences** for planned maintenance windows
-4. Use **Grafana annotations** to mark deployments on your dashboards (correlate performance changes with deployments)
+1. **Grafana Loki** — add log aggregation so metrics and logs live side by side
+2. **Blackbox Exporter** — monitor external endpoints (HTTP, TCP, ICMP) from the outside
+3. **AlertManager silences** — schedule maintenance windows so planned work doesn't page you
+4. **Grafana annotations** — mark deployments on dashboards to correlate changes with performance
+5. **Service discovery** — in Kubernetes, let Prometheus discover targets automatically via service monitors
+
+## Wrapping Up
+
+A monitoring stack is never "done" — it evolves with your infrastructure. Start with these three services, add exporters as you grow, and iterate on your alert rules until they're quiet during normal operations and loud when something actually breaks.
+
+If you found this useful, check out my other posts on Kubernetes and automation — and feel free to reach out if you have questions or want to share how your own stack looks.
