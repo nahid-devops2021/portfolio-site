@@ -4,4 +4,4 @@ date: 2026-08-14
 author: "Nahid Hasan"
 ---
 
-<!-- Blog coming soon -->
+Thoughts, tutorials, and notes on DevOps, monitoring, Kubernetes, automation, and infrastructure.

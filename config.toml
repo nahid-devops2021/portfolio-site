@@ -1,6 +1,6 @@
 #baseURL = "http://localhost:1313/"
 baseURL = "https://nahid-devops2021.github.io/portfolio-site/"
-title = "Nahid Hasan · Portfolio"
+title = "Nahid Hasan"
 theme = "hugo-coder"
 languageCode = "en"
 defaultContentLanguage = "en"
