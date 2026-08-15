@@ -21,30 +21,15 @@ I've set this up multiple times for FinTech and telecom infrastructure. Here's t
 
 ## The Architecture
 
-```
-                    ┌─────────────┐
-                    │  Servers /  │
-                    │  Apps       │
-                    └──────┬──────┘
-                           │ exposes /metrics
-                           ▼
-                    ┌─────────────┐
-                    │ Prometheus  │  ← scrapes metrics every 15s
-                    └──────┬──────┘
-                           │
-                ┌──────────┼──────────┐
-                ▼          ▼          ▼
-         ┌──────────┐ ┌────────┐ ┌──────────┐
-         │  Grafana │ │Alert   │ │  Other   │
-         │  Dashboards │Manager │ │  Tools   │
-         └──────────┘ └────────┘ └──────────┘
-                           │
-                           ▼
-                    ┌──────────────┐
-                    │  Slack/Email │
-                    │  /Telegram   │
-                    └──────────────┘
-```
+{{< mermaid >}}
+graph TB
+    A[Servers / Apps] -->|exposes /metrics| B[Prometheus]
+    B -->|scrapes every 15s| C[Time-Series DB]
+    B --> D[Grafana Dashboards]
+    B --> E[AlertManager]
+    E --> F[Slack / Email / Telegram]
+    C --> D
+{{< /mermaid >}}
 
 ## 1. Docker Compose Setup
 
