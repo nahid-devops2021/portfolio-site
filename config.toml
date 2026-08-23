@@ -6,6 +6,7 @@ languageCode = "en"
 defaultContentLanguage = "en"
 paginate = 20
 pygmentsStyle = "bw"
+pygmentsUseClasses = true
 pygmentsCodeFences = true
 pygmentsCodeFencesGuessSyntax = true
 enableEmoji = true
