@@ -5,7 +5,7 @@ description = "A production-focused guide to designing, deploying, securing, and
 tags = ["prometheus", "grafana", "alertmanager", "node-exporter", "monitoring", "observability", "sre", "docker", "devops"]
 categories = ["DevOps"]
 author = "Nahid Hasan"
-featuredImage = "/images/blog-assets/monitoring-stack-hero.svg"
+featuredImage = "images/blog-assets/monitoring-stack-hero.svg"
 aliases = ["/posts/prometheus-grafana-alertmanager/"]
 +++
 
