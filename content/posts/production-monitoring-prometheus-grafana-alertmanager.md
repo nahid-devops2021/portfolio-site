@@ -26,7 +26,7 @@ This is not a "run this container and you're done" tutorial. Every decision in t
 
 **Assumptions:** You are comfortable with Linux, basic networking, and Docker. You do not need deep Prometheus experience — the concepts are explained as we go.
 
-**Scope note:** This guide targets a small-to-medium production environment (tens of hosts, thousands of series). Large-scale multi-cluster architectures are discussed in Section 14, but the implementation here is intentionally single-instance.
+**Scope note:** This guide targets a small-to-medium production environment (tens of hosts, thousands of series). Large-scale multi-cluster architectures are discussed in the *High Availability and Scalability* section, but the implementation here is intentionally single-instance.
 
 
 ## Why Production Monitoring Matters
@@ -51,7 +51,7 @@ During an incident, metrics are the first place an engineer looks. A well-design
 
 ### SLA and SLO Awareness
 
-If your team operates against service-level objectives, you need a way to measure error budgets. Prometheus's native support for ratio queries (for example, `sum(rate(http_requests_total{code=~"5.."}[5m])) / sum(rate(http_requests_total[5m])))`) makes SLO burn-rate alerting practical.
+If your team operates against service-level objectives, you need a way to measure error budgets. Prometheus's native support for ratio queries (for example, `sum(rate(http_requests_total{code=~"5.."}[5m])) / sum(rate(http_requests_total[5m]))`) makes SLO burn-rate alerting practical.
 
 ### Metrics, Logs, Traces, and Alerts — and Why This Stack Is About Metrics
 
@@ -140,7 +140,7 @@ Actual sizing depends on variables that are specific to your environment:
 - **Metrics per target** — a Node Exporter exposes ~1000 metrics; an application exporter can expose 10x that
 - **Scrape interval** — 15s vs 30s doubles or halves samples per second
 - **Retention period** — local TSDB retention directly determines disk usage
-- **Cardinality** — the product of all label values across a metric family (see Section 16)
+- **Cardinality** — the product of all label values across a metric family (see the *Performance and Capacity Planning* section)
 - **Query workload** — dashboard-heavy environments need more CPU and memory
 
 A reasonable formula for estimating storage: each time series consumes roughly **1–2 bytes per sample** on disk (compressed). If you scrape 20k series every 15s, that is ~1,333 samples/second → ~115M samples/day → roughly **3–6 GB/day** including index overhead. Plan for double that to absorb churn and compaction.
@@ -158,7 +158,7 @@ A reasonable formula for estimating storage: each time series consumes roughly *
 | 3000 | Grafana | Operators, reverse proxy |
 | 9093 | Alertmanager UI | Operators, Prometheus server |
 
-Everything else should be denied at the firewall (see Section 13).
+Everything else should be denied at the firewall (see the *Security Hardening* section).
 
 
 ## Deployment Strategy
@@ -169,7 +169,7 @@ The concepts in this article apply to any deployment method. We implement with *
 2. **It is honest about state** — volumes for data, configs mounted read-only
 3. **It ports cleanly** — the same images and configuration transfer to Kubernetes (as Deployments and ConfigMaps) or bare-metal (as systemd services) with minimal change
 
-A single host running Docker Compose is a legitimate deployment for a small production environment. For a single Prometheus instance, it is operationally fine — the OS runs, Docker restarts the containers, and data lives on a persistent volume. When you outgrow it, Section 14 covers the path to HA and long-term storage.
+A single host running Docker Compose is a legitimate deployment for a small production environment. For a single Prometheus instance, it is operationally fine — the OS runs, Docker restarts the containers, and data lives on a persistent volume. When you outgrow it, the *High Availability and Scalability* section covers the path to HA and long-term storage.
 
 ## Prometheus Installation
 
@@ -216,7 +216,7 @@ scrape_configs:
 - **`evaluation_interval`** — how often alert and recording rules are evaluated. Keep it equal to the scrape interval so rules see fresh data.
 - **`scrape_configs`** — the list of targets and jobs.
 - **`rule_files`** — alert and recording rules, loaded from a glob.
-- **`alerting`** — where to send alerts (Section 10).
+- **`alerting`** — where to send alerts (see the *Alertmanager* section).
 - **`external_labels`** — labels added to every series and alert. Critical later if you ever use remote write or multi-cluster setups.
 
 
@@ -255,7 +255,7 @@ And `/etc/prometheus/targets/servers.yml`:
     role: "database"
 ```
 
-File-based service discovery means adding a new server is a one-line file edit — no Prometheus restart required (see Section 12).
+File-based service discovery means adding a new server is a one-line file edit — no Prometheus restart required (see the *Service Discovery* section).
 
 ### 7.5 Recording Rules
 
@@ -417,7 +417,7 @@ The common thread: counters (everything ending `_total`) must be `rate()`d, not 
 
 ### 9.2 Initial Configuration
 
-Change the admin password immediately after first login. In production, configure Grafana against a real identity provider via LDAP or OAuth rather than local accounts, and place it behind a reverse proxy with TLS (Section 13).
+Change the admin password immediately after first login. In production, configure Grafana against a real identity provider via LDAP or OAuth rather than local accounts, and place it behind a reverse proxy with TLS (see the *Security Hardening* section).
 
 ### 9.3 Prometheus Data Source
 
@@ -516,7 +516,7 @@ receivers:
         auth_password: "YOUR_SMTP_PASSWORD"
 ```
 
-All credentials above are placeholders — never commit real webhook URLs, tokens, or SMTP passwords. Manage secrets via environment variables or a secret manager (Section 13).
+All credentials above are placeholders — never commit real webhook URLs, tokens, or SMTP passwords. Manage secrets via environment variables or a secret manager (see the *Security Hardening* section).
 
 ### Alert Flow
 
@@ -891,7 +891,7 @@ Common causes: exporter service stopped, wrong port in the target file, firewall
 
 ### Scenario 6: Prometheus Memory Usage Keeps Growing
 
-- Check `prometheus_tsdb_head_series` — if it climbs without plateau, it is cardinality growth (Section 14)
+- Check `prometheus_tsdb_head_series` — if it climbs without plateau, it is cardinality growth (see the *Performance and Capacity Planning* section)
 - Use the **TSDB Status** page: top label-value pairs, top series by cardinality
 - Check scrape load: too many targets at a short interval
 - Query load: heavy dashboard queries on every refresh
