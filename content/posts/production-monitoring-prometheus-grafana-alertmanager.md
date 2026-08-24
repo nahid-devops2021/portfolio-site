@@ -5,7 +5,7 @@ description = "A production-focused guide to designing, deploying, securing, and
 tags = ["prometheus", "grafana", "alertmanager", "node-exporter", "monitoring", "observability", "sre", "docker", "devops"]
 categories = ["DevOps"]
 author = "Nahid Hasan"
-featuredImage = "images/blog-assets/monitoring-stack-hero.svg"
+featuredImage = "images/blog-assets/monitoring-stack-hero.jpg"
 aliases = ["/posts/prometheus-grafana-alertmanager/"]
 +++
 
@@ -70,6 +70,8 @@ This article focuses on the metrics-and-alerts pillar. Metrics are the most effi
 ## Architecture Overview
 
 The stack follows a simple, proven data flow: exporters expose metrics, Prometheus collects and stores them, Grafana visualizes them, and Alertmanager routes alerts generated from Prometheus rules to notification channels.
+
+![Monitoring stack architecture — targets, exporters, and the Prometheus → Grafana → Alertmanager data flow](images/blog-assets/monitoring-architecture.jpg)
 
 {{< mermaid >}}
 graph TB
@@ -219,6 +221,8 @@ scrape_configs:
 
 
 ### 7.4 Scrape Targets
+
+![Prometheus service discovery — dynamically finding infrastructure targets as servers are added, removed, or scaled](images/blog-assets/monitoring-security.jpg)
 
 Realistic targets, split by job:
 
@@ -436,6 +440,8 @@ Declarative provisioning means dashboards and data sources are version-controlle
 
 A useful dashboard is an investigation tool, not a screensaver. Design two tiers:
 
+![Grafana dashboards — production infrastructure health at a glance](images/blog-assets/monitoring-dashboard.jpg)
+
 **Infrastructure Overview** (one row per host, or one panel per resource):
 - CPU utilization (`instance:node_cpu_utilization:rate5m` — the recording rule from Section 7.5)
 - Memory usage (`node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes`)
@@ -454,6 +460,8 @@ A useful dashboard is an investigation tool, not a screensaver. Design two tiers
 
 
 ## Alertmanager
+
+![Production alert routing — Prometheus rules to Alertmanager grouping and severity-based notification](images/blog-assets/monitoring-alerting.jpg)
 
 ### Alertmanager Architecture
 

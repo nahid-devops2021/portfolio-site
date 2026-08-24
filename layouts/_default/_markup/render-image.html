@@ -1,0 +1,2 @@
+{{- /* Markdown image render hook — resolves image paths against baseURL so they work on self-hosted root AND GitHub Pages subpath. */ -}}
+<img src="{{ .Destination | relURL }}" alt="{{ .Text | safeHTMLAttr }}"{{ with .Title }} title="{{ . | safeHTMLAttr }}"{{ end }}>
