@@ -1,7 +1,7 @@
 +++
 title = "NGINX Gateway API Controller: From a Stuck GatewayClass to Healthy Leader Election"
 date = "2026-08-24"
-description = "A real debugging narrative: the GatewayClass sits stuck on Accepted: Unknown even though the controller Pod is running. The root cause is a broken RBAC leases verbs list quietly breaking leader election — and why 'status never reconciles' is usually a control-plane problem, not a routing problem."
+description = "A real debugging narrative: the GatewayClass sits stuck on Accepted: Unknown even though the controller Pod is running. The root cause is a single missing RBAC 'update' verb in the leases list that silently breaks leader election — and why 'status never reconciles' is usually a control-plane problem, not a routing problem."
 tags = ["kubernetes", "gateway-api", "nginx", "nginx-gateway-fabric", "rbac", "leader-election", "traffic-management", "sre", "devops"]
 categories = ["DevOps"]
 author = "Nahid Hasan"
@@ -13,7 +13,7 @@ Most Gateway API tutorials stop at *"install the CRDs, apply an `HTTPRoute`, cur
 
 This post is about the other 90% — the operational reality. On a minimal lab cluster the controller started, the Pod was `Running`, nothing *looked* wrong in a basic `kubectl get`, yet the `GatewayClass` sat stuck on `Accepted: Unknown`, reason `Waiting for controller`, with zero conditions ever reconciled.
 
-The fix turned out to be a **one-word drop in an RBAC `leases` verbs list** — and it manifests so invisibly that, unless you know where to look, you will blame your `HTTPRoute`, your Gateway, and finally your cluster before you ever glance at leader election.
+The fix turned out to be a single missing verb in the RBAC `leases` list — `update` — and it manifests so invisibly that, unless you know where to look, you will blame your `HTTPRoute`, your Gateway, and finally your cluster before you ever glance at leader election.
 
 <!--more-->
 
@@ -55,7 +55,7 @@ Status:
     Type:                  Accepted
 ```
 
-The capital signpost in the Gateway API world is `status.conditions`. Any serious debugging session starts there, because `conditions` are the contract: `type`, `status` (`True`/`False`/`Unknown`), `reason`, and `message`. The presence of **`Accepted: Unknown` with `Waiting for controller`** is a precise claim: *no controller that owns this class is reconciling it*.
+The chief signpost in the Gateway API world is `status.conditions`. Any serious debugging session starts there, because `conditions` are the contract: `type`, `status` (`True`/`False`/`Unknown`), `reason`, and `message`. The presence of **`Accepted: Unknown` with `Waiting for controller`** is a precise claim: *no controller that owns this class is reconciling it*.
 
 ## The systematic differential (the part nobody writes down)
 
@@ -73,7 +73,7 @@ NGF (built on `controller-runtime`) enables **lease-based leader election by def
 
 > only the pod with the leader lease can actively manage configuration status updates.
 
-Read that twice, because it explains the entire mystery. All control-plane replicas can *push config* to data planes — but **only the current leader may write status** onto Gateway API resources like `GatewayClass.status`. So a leader-election fault doesn't look like an outage. It looks like **"status never reconciles,"** with a perfectly healthy Pod.
+Read that twice, because it explains the entire mystery. All control-plane replicas can *push config* to data planes — but **only the current leader may write status** onto Gateway API resources like `GatewayClass.status`. So a leader-election fault doesn't look like an outage. It looks like "status never reconciles," with a perfectly healthy Pod.
 
 The lease lives in the control-plane namespace:
 
@@ -95,7 +95,7 @@ E… controller-runtime/leaderelection … Failed to renew lease …
 Forbidden: … cannot update resource "leases" in API group "coordination.k8s.io" …
 ```
 
-There it is. The controller can `create`/`get` the lease but **cannot `update` it** — so it can't renew leadership, so it never becomes leader, so it never writes status. Everything else looks fine because everything else *is* fine.
+There it is. The controller can `create`/`get` the lease but **cannot `update` it** — so it can't renew leadership, becomes no one's leader, and therefore never writes status. Everything else looks fine because everything else *is* fine.
 
 ## Confirming the RBAC hole
 
