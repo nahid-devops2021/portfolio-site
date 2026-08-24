@@ -1,0 +1,40 @@
+/* Tag & post-meta alignment fixes (project override, does not touch the theme) */
+.post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.25rem;
+}
+
+/* Tags: clean pill row, evenly spaced, wraps neatly */
+.post-meta .tags {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.post-meta .tags > i.fa-tag {
+  margin-right: 0.15rem;
+}
+
+/* Remove the awkward bullet separator between pills (was "•" between each) */
+.post-meta .tags .separator {
+  display: none;
+}
+
+/* Balanced spacing — no extra margin on the pill itself */
+.post-meta .tags .tag {
+  margin: 0;
+}
+
+/* Taxonomy / tag-listing pages: keep pills aligned and wrap cleanly */
+.content .tags {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+.content .tags .separator {
+  display: none;
+}
